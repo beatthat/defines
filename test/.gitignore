@@ -15,8 +15,6 @@ Library
 
 node_modules
 Assets
-manifest.json
-manifest.json.meta
 .vscode
 
 EditorTestResults.xml

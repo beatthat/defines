@@ -7,7 +7,8 @@
   "scripts": {
     "clean": "rm -rf node_modules package-lock.json yarn.lock Library Temp Assets",
     "cp:test2src": "node ./scripts/cp-test2src.js",
-    "overwrite:test2src": "node ./scripts/overwrite-test2src.js"
+    "overwrite:test2src": "node ./scripts/overwrite-test2src.js",
+    "unity2clone:overwrite": "./node_modules/.bin/unity2clone-overwrite"
   },
   "dependencies": {
     "defines": "../defines-latest.tgz"
