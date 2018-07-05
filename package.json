@@ -1,0 +1,44 @@
+{
+  "name": "defines",
+  "scope": "beatthat",
+  "version": "1.0.0",
+  "description": "Expose the precompiler defines you use around your code in a single window with options to enable/disable.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node scripts/postinstall.js",
+    "preinstall:test": "rm -f *.tgz",
+    "install:test": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test && npm run clean && npm install",
+    "clean": "rm -f *.tgz package-lock.json && cd test && npm run clean",
+    "template:update": "node scripts/template-update.js",
+    "cp:test2src": "cd test && node scripts/cp-test2src.js",
+    "overwrite:test2src": "cd test && node scripts/overwrite-test2src.js",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags && npm run clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beatthat/defines.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beatthat/defines/issues"
+  },
+  "homepage": "https://github.com/beatthat/defines#readme",
+  "files": [
+    "index.js",
+    "scripts",
+    "src",
+    "Runtime",
+    "Samples"
+  ],
+  "dependencies": {
+    "path": "^0.12.7",
+    "pools": "github:beatthat/pools",
+    "type-utils": "github:beatthat/type-utils",
+    "unity-npm-utils": "github:beatthat/unity-npm-utils#semver:^1.0.0"
+  },
+  "devDependencies": {}
+}
