@@ -1,7 +1,7 @@
 {
   "name": "defines",
   "scope": "beatthat",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Expose the precompiler defines you use around your code in a single window with options to enable/disable.",
   "main": "index.js",
   "scripts": {
