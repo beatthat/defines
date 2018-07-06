@@ -139,17 +139,48 @@ namespace BeatThat.Defines
                 this.scrollPos = GUILayout.BeginScrollView(this.scrollPos, EditorStyles.helpBox);
                 for (var i = 0; i < deflist.Count; i++)
                 {
+                    var bkgColorSave = GUI.backgroundColor;
+
+                    switch(deflist[i].GetEditType()) {
+                        case EditType.WILL_ADD:
+                            GUI.backgroundColor = WILL_ADD;
+                            break;
+                        case EditType.WILL_REMOVE:
+                            GUI.backgroundColor = WILL_REMOVE;
+                            break;
+                        default:
+                            GUI.backgroundColor = DEFAULT;
+                            break;
+                    }
+
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
+
                     var willEnable = GUILayout.Toggle(deflist[i].willEnable, new GUIContent(deflist[i].name, deflist[i].desc));
                     defineEdits.Set(deflist[i].name, willEnable);
 
-                    GUILayout.EndVertical();
+                    var desc = deflist[i].desc ?? "";
+
+                    GUILayout.Label(desc, EditorStyles.wordWrappedMiniLabel);
+
+                    //if (GUILayout.Button("...", EditorStyles.miniButtonRight, GUILayout.Width(30f)))
+                    //{
+                    //    m_defineEdits.Set(m_addSymbol);
+                    //    m_addSymbol = "";
+                    //}
+
+                    GUILayout.EndHorizontal();
+
+                    GUI.backgroundColor = bkgColorSave;
+
                 }
                 GUILayout.EndScrollView();
             }
 
         }
 
+        private static Color WILL_ADD = Color.cyan;
+        private static Color WILL_REMOVE = Color.yellow;
+        private static Color DEFAULT = Color.white;
     }
 }
 

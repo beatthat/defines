@@ -69,8 +69,17 @@ namespace BeatThat.Defines
                     name = name
                 };
             }
-            defineEdit.willEnable = willEnable;
-            m_defines[name] = defineEdit;
+            m_defines[name] = defineEdit.WillEnable(willEnable);
+        }
+
+        public void ShowDetails(string name, bool show = true)
+        {
+            DefineEditData defineEdit;
+            if (!m_defines.TryGetValue(name, out defineEdit))
+            {
+                return;
+            }
+            m_defines[name] = defineEdit.ShowDetails(show);
         }
 
         public bool Contains(string symbol)
