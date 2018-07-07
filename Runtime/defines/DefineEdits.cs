@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using BeatThat.Pools;
+using UnityEngine;
 
 namespace BeatThat.Defines
 {
@@ -11,85 +11,67 @@ namespace BeatThat.Defines
     {
         public DefineEdits Clear()
         {
-            m_defines.Clear();
+            m_definesById.Clear();
+            m_symbol2DefineId.Clear();
             return this;
         }
 
-
-        public DefineEdits AddSymbols(string defines, char sep = ';')
+        public static string PolishSymbol(string s)
         {
-            Merge(defines, m_defines, sep);
+            return s != null ? ILLEGAL_SYMBOL_CHARS.Replace(s, "") : null;
+        }
+
+        public DefineEdits AddDefinedSymbols(string definedSymbols, char sep = ';')
+        {
+            Merge(
+                definedSymbols,
+                m_definesById,
+                m_symbol2DefineId,
+                sep
+            );
             return this;
         }
 
         public void Get(List<DefineEditData> defines, bool sort = true)
         {
-            defines.AddRange(m_defines.Values);
+            defines.AddRange(m_definesById.Values);
             if (sort)
             {
-                defines.Sort((x, y) => string.Compare(x.name.ToLower(), y.name.ToLower(), System.StringComparison.Ordinal));
+                defines.Sort((x, y) => string.Compare(x.id, y.id, StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
-        public void AddOption(string name, string desc)
+        public void AddOption(string[] symbols, string desc, bool enabled = false)
         {
-            name = PolishSymbol(name);
-
-            if (string.IsNullOrEmpty(name))
-            {
-                return;
-            }
-
-            DefineEditData defineEdit;
-            if (!m_defines.TryGetValue(name, out defineEdit))
-            {
-                defineEdit = new DefineEditData
-                {
-                    name = name,
-                    desc = desc
-                };
-            }
-
-            defineEdit.desc = desc; // TODO: handle multiple descs
-
-            m_defines[name] = defineEdit;
+            AddOption(
+                m_definesById, 
+                m_symbol2DefineId,
+                SymbolsToId(symbols), 
+                symbols, 
+                desc, 
+                enabled
+            );
         }
 
-        public void Set(string name, bool willEnable = true)
+        public void Set(string symbol, bool willEnable = true)
         {
-            name = PolishSymbol(name);
-            if(string.IsNullOrEmpty(name)) {
-                return;
-            }
-
-            DefineEditData defineEdit;
-            if(!m_defines.TryGetValue(name, out defineEdit)) {
-                defineEdit = new DefineEditData
-                {
-                    name = name
-                };
-            }
-            m_defines[name] = defineEdit.WillEnable(willEnable);
-        }
-
-        public void ShowDetails(string name, bool show = true)
-        {
-            DefineEditData defineEdit;
-            if (!m_defines.TryGetValue(name, out defineEdit))
-            {
-                return;
-            }
-            m_defines[name] = defineEdit.ShowDetails(show);
+            Set(
+                m_definesById,
+                m_symbol2DefineId,
+                symbol, 
+                willEnable
+            );
         }
 
         public bool Contains(string symbol)
         {
-            return m_defines.Keys.Any(s => s.Equals(symbol, StringComparison.InvariantCultureIgnoreCase));
+            var id = Symbol2Id(symbol);
+            return m_definesById.Keys.Any(s => s.Equals(id, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public bool AnyEdits()
         {
-            return m_defines.Values.Any(s => s.enabled != s.willEnable);
+            return m_definesById.Values.Any(s => s.isDefined != s.willDefine);
         }
 
         public string ToSymbolString(char sep = ';', bool sort = true)
@@ -99,7 +81,7 @@ namespace BeatThat.Defines
                 Get(symbols, sort);
                 return symbols.Aggregate(sb.stringBuilder, (acc, cur) =>
                 {
-                    if (!cur.willEnable)
+                    if (!cur.willDefine)
                     {
                         return acc;
                     }
@@ -107,17 +89,34 @@ namespace BeatThat.Defines
                     {
                         acc.Append(sep);
                     }
-                    acc.Append(cur.name);
+                    acc.Append(cur.symbol);
                     return acc;
                 }).ToString();
             }
         }
 
-        private static readonly Regex ILLEGAL_SYMBOL_CHARS = new Regex("[^A-Za-z0-9_\\-]");
-        public static string PolishSymbol(string s)
+        /// <summary>
+        /// Convert a group of symbols to an id string.
+        /// Could do this with a hash with low probability of collisions
+        /// but for now just convert the symbols into a cannonical string.
+        /// </summary>
+        private string SymbolsToId(string[] symbols)
         {
-            return s != null ? ILLEGAL_SYMBOL_CHARS.Replace(s, "") : null;
+            using(var sorted = ArrayPool<string>.GetCopy(symbols))
+            using (var sb = PooledStringBuilder.Get())
+            {
+                Array.Sort(sorted.array, StringComparer.InvariantCultureIgnoreCase);
+                return string.Join(";", sorted.array);
+            }
         }
+
+        private string Symbol2Id(string symbol)
+        {
+            string id;
+            return m_symbol2DefineId.TryGetValue(symbol, out id) ? id : symbol;
+        }
+
+        private static readonly Regex ILLEGAL_SYMBOL_CHARS = new Regex("[^A-Za-z0-9_\\-]");
 
 
         override public string ToString()
@@ -125,36 +124,97 @@ namespace BeatThat.Defines
             return ToSymbolString();
         }
 
-        public static void Merge(string defines, Dictionary<string, DefineEditData> definesDict, char sep = ';')
+        private void Merge(
+            string definedSymbols, 
+            Dictionary<string, DefineEditData> definesById, 
+            Dictionary<string, string> symbol2DefineId,
+            char sep = ';')
         {
-            defines.Split(sep).Aggregate(definesDict, (acc, cur) =>
+            definedSymbols.Split(sep).Aggregate(definesById, (dDict, curSymbol) =>
             {
-                if (string.IsNullOrEmpty((cur = PolishSymbol(cur))))
+                try
                 {
-                    return acc;
+                    Set(dDict, symbol2DefineId, curSymbol, willEnable: true, setEnabledIfNew: true);
+                    return dDict;
                 }
-
-                DefineEditData curVal;
-                if (acc.TryGetValue(cur, out curVal))
+                catch (Exception e)
                 {
-                    curVal.enabled = true;
+#if UNITY_EDITOR || DEBUG_UNSTRIP
+                    UnityEngine.Debug.LogError("Failed to set symbol '" 
+                                   + curSymbol + " with error: " + e.Message);
+#endif
+                    return dDict;
                 }
-                else
-                {
-                    curVal = new DefineEditData
-                    {
-                        name = cur,
-                        enabled = true,
-                        willEnable = true
-                    };
-                }
-
-                acc[cur] = curVal;
-
-                return acc;
             });
         }
 
-        private Dictionary<string, DefineEditData> m_defines = new Dictionary<string, DefineEditData>();
+        private void Set(
+            Dictionary<string, DefineEditData> definesById,
+            Dictionary<string, string> symbol2DefineId,
+            string symbol,
+            bool willEnable = true,
+            bool setEnabledIfNew = false)
+        {
+            symbol = PolishSymbol(symbol);
+            if (string.IsNullOrEmpty(symbol))
+            {
+                return;
+            }
+
+            var id = Symbol2Id(symbol);
+
+            DefineEditData defineEdit;
+            if (!definesById.TryGetValue(id, out defineEdit))
+            {
+                defineEdit = AddOption(definesById, 
+                          symbol2DefineId, 
+                          id,
+                          new string[] { symbol }, 
+                          desc: "", 
+                          isDefined: setEnabledIfNew
+                         );
+            }
+
+            var updated = defineEdit.Select(symbol).WillDefine(willEnable);
+
+            definesById[id] = updated;
+        }
+
+        private DefineEditData AddOption(
+            Dictionary<string, DefineEditData> definesById,
+            Dictionary<string, string> symbol2DefineId,
+            string id, 
+            string[] symbols, 
+            string desc, 
+            bool isDefined = false)
+        {
+            DefineEditData defineEdit;
+            if (!definesById.TryGetValue(id, out defineEdit))
+            {
+                defineEdit = new DefineEditData
+                {
+                    id = id,
+                    symbols = symbols,
+                    isDefined = isDefined
+                };
+            }
+
+            defineEdit.desc = !string.IsNullOrEmpty(defineEdit.desc)
+                ? defineEdit.desc
+                : isDefined ? "[from player settings]" : "";
+            
+
+            definesById[id] = defineEdit;
+
+            foreach (var s in symbols)
+            {
+                symbol2DefineId[s] = id;
+            }
+
+            return defineEdit;
+        }
+
+        private Dictionary<string, DefineEditData> m_definesById = new Dictionary<string, DefineEditData>();
+        private Dictionary<string, string> m_symbol2DefineId = new Dictionary<string, string>();
     }
 }

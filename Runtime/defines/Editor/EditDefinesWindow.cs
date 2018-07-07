@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using BeatThat.Pools;
 using BeatThat.TypeUtil;
 using UnityEditor;
@@ -15,7 +14,7 @@ namespace BeatThat.Defines
         private string m_addSymbol;
         private Dictionary<string, TypeAndAttribute[]> m_editDefinesBySymbol = new Dictionary<string, TypeAndAttribute[]>();
 
-        [MenuItem("Window/BeatThat/Edit Defines")]
+        [MenuItem("Window/Define Scripting Symbols")]
         public static void ShowWindow()
         {
             EditorWindow.GetWindow(typeof(EditDefinesWindow));
@@ -50,13 +49,13 @@ namespace BeatThat.Defines
         {
             m_defineEdits.Clear();
 
-            m_defineEdits.AddSymbols(this.definesCurrent);
-
             foreach (var alist in m_editDefinesBySymbol.Values)
             {
                 var attr = alist[0].attr as EditDefineAttribute;
-                m_defineEdits.AddOption(attr.symbol, attr.desc);
+                m_defineEdits.AddOption(attr.symbols, attr.desc);
             }
+
+            m_defineEdits.AddDefinedSymbols(this.definesCurrent);
         }
 
 
@@ -141,7 +140,13 @@ namespace BeatThat.Defines
                 {
                     var bkgColorSave = GUI.backgroundColor;
 
-                    switch(deflist[i].GetEditType()) {
+                    var curDef = deflist[i];
+
+                    if(curDef.symbolCount < 1) {
+                        continue;
+                    }
+
+                    switch(curDef.GetEditType()) {
                         case EditType.WILL_ADD:
                             GUI.backgroundColor = WILL_ADD;
                             break;
@@ -155,10 +160,17 @@ namespace BeatThat.Defines
 
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                    var willEnable = GUILayout.Toggle(deflist[i].willEnable, new GUIContent(deflist[i].name, deflist[i].desc));
-                    defineEdits.Set(deflist[i].name, willEnable);
+                    var willEnable = GUILayout.Toggle(curDef.willDefine, "", GUILayout.Width(40f));
+                    if (curDef.symbolCount == 1) {
+                        GUILayout.Label(new GUIContent(curDef.symbol, curDef.desc), EditorStyles.label);
+                    }
+                    else {
+                        curDef.willDefineSymbolIndex = EditorGUILayout.Popup(curDef.willDefineSymbolIndex, curDef.symbols, EditorStyles.popup);
+                    }
 
-                    var desc = deflist[i].desc ?? "";
+                    defineEdits.Set(curDef.symbol, willEnable);
+
+                    var desc = curDef.desc ?? "";
 
                     GUILayout.Label(desc, EditorStyles.wordWrappedMiniLabel);
 
