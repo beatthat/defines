@@ -28,7 +28,15 @@
     "type": "git",
     "url": "git+https://github.com/beatthat/defines.git"
   },
-  "keywords": [],
+  "keywords": [
+      "unity",
+      "unity3d",
+      "package",
+      "c#",
+      "csharp",
+      "npm",
+      "unpm"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
