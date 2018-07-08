@@ -138,39 +138,56 @@ namespace BeatThat.Defines
                 this.scrollPos = GUILayout.BeginScrollView(this.scrollPos, EditorStyles.helpBox);
                 for (var i = 0; i < deflist.Count; i++)
                 {
-                    var bkgColorSave = GUI.backgroundColor;
-
                     var curDef = deflist[i];
 
-                    if(curDef.symbolCount < 1) {
+                    if (curDef.symbolCount < 1)
+                    {
                         continue;
                     }
 
-                    switch(curDef.GetEditType()) {
+                    var bkgColorSave = GUI.backgroundColor;
+                    var colorSave = GUI.contentColor;
+
+                    switch (curDef.GetEditType())
+                    {
                         case EditType.WILL_ADD:
-                            GUI.backgroundColor = WILL_ADD;
+                            GUI.backgroundColor = BKG_WILL_ADD;
+                            GUI.contentColor = TEXT_WILL_CHANGE;
                             break;
                         case EditType.WILL_REMOVE:
-                            GUI.backgroundColor = WILL_REMOVE;
+                            GUI.backgroundColor = BKG_WILL_REMOVE;
+                            GUI.contentColor = TEXT_WILL_CHANGE;
+                            break;
+                        case EditType.WILL_CHANGE_SELECTION:
+                            GUI.backgroundColor = BKG_WILL_CHANGE_SELECTION;
+                            GUI.contentColor = TEXT_WILL_CHANGE;
                             break;
                         default:
-                            GUI.backgroundColor = DEFAULT;
+                            GUI.backgroundColor = BKG_DEFAULT;
+                            GUI.contentColor = TEXT_DEFAULT;
                             break;
                     }
 
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                    var willEnable = GUILayout.Toggle(curDef.willDefine, "", GUILayout.Width(40f));
-                    if (curDef.symbolCount == 1) {
-                        GUILayout.Label(new GUIContent(curDef.symbol, curDef.desc), EditorStyles.label);
-                    }
-                    else {
-                        curDef.willDefineSymbolIndex = EditorGUILayout.Popup(curDef.willDefineSymbolIndex, curDef.symbols, EditorStyles.popup);
-                    }
 
+                    var willEnable = GUILayout.Toggle(curDef.willDefine, "", GUILayout.Width(25f));
+
+                    if (curDef.symbolCount == 1)
+                    {
+                        GUILayout.Label(new GUIContent(curDef.symbol, curDef.desc), GUILayout.Width(200f));
+                    }
+                    else
+                    {
+                        curDef.willDefineSymbolIndex =
+                            EditorGUILayout.Popup(curDef.willDefineSymbolIndex, curDef.symbols, GUILayout.Width(200f));
+                    }
+                
                     defineEdits.Set(curDef.symbol, willEnable);
 
                     var desc = curDef.desc ?? "";
+
+                    GUILayout.Space(10f);
 
                     GUILayout.Label(desc, EditorStyles.wordWrappedMiniLabel);
 
@@ -183,6 +200,7 @@ namespace BeatThat.Defines
                     GUILayout.EndHorizontal();
 
                     GUI.backgroundColor = bkgColorSave;
+                    GUI.contentColor = colorSave;
 
                 }
                 GUILayout.EndScrollView();
@@ -190,9 +208,14 @@ namespace BeatThat.Defines
 
         }
 
-        private static Color WILL_ADD = Color.cyan;
-        private static Color WILL_REMOVE = Color.yellow;
-        private static Color DEFAULT = Color.white;
+        private static Color TEXT_WILL_CHANGE = Color.white;
+        private static Color TEXT_DEFAULT = Color.black;
+
+
+        private static Color BKG_WILL_ADD = Color.cyan;
+        private static Color BKG_WILL_REMOVE = Color.yellow;
+        private static Color BKG_WILL_CHANGE_SELECTION = Color.magenta;
+        private static Color BKG_DEFAULT = Color.white;
     }
 }
 

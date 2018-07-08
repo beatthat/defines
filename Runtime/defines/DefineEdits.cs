@@ -48,8 +48,7 @@ namespace BeatThat.Defines
                 m_symbol2DefineId,
                 SymbolsToId(symbols), 
                 symbols, 
-                desc, 
-                enabled
+                desc
             );
         }
 
@@ -71,7 +70,7 @@ namespace BeatThat.Defines
 
         public bool AnyEdits()
         {
-            return m_definesById.Values.Any(s => s.isDefined != s.willDefine);
+            return m_definesById.Values.Any(s => s.GetEditType() != EditType.NONE);
         }
 
         public string ToSymbolString(char sep = ';', bool sort = true)
@@ -134,7 +133,7 @@ namespace BeatThat.Defines
             {
                 try
                 {
-                    Set(dDict, symbol2DefineId, curSymbol, willEnable: true, setEnabledIfNew: true);
+                    Set(dDict, symbol2DefineId, curSymbol, willEnable: true, isDefined: true);
                     return dDict;
                 }
                 catch (Exception e)
@@ -153,7 +152,7 @@ namespace BeatThat.Defines
             Dictionary<string, string> symbol2DefineId,
             string symbol,
             bool willEnable = true,
-            bool setEnabledIfNew = false)
+            bool isDefined = false)
         {
             symbol = PolishSymbol(symbol);
             if (string.IsNullOrEmpty(symbol))
@@ -170,14 +169,11 @@ namespace BeatThat.Defines
                           symbol2DefineId, 
                           id,
                           new string[] { symbol }, 
-                          desc: "", 
-                          isDefined: setEnabledIfNew
+                          desc: ""
                          );
             }
 
-            var updated = defineEdit.Select(symbol).WillDefine(willEnable);
-
-            definesById[id] = updated;
+            definesById[id] = defineEdit.Select(symbol, (isDefined)).WillDefine(willEnable);;
         }
 
         private DefineEditData AddOption(
@@ -185,8 +181,7 @@ namespace BeatThat.Defines
             Dictionary<string, string> symbol2DefineId,
             string id, 
             string[] symbols, 
-            string desc, 
-            bool isDefined = false)
+            string desc)
         {
             DefineEditData defineEdit;
             if (!definesById.TryGetValue(id, out defineEdit))
@@ -195,14 +190,15 @@ namespace BeatThat.Defines
                 {
                     id = id,
                     symbols = symbols,
-                    isDefined = isDefined
+                    definedSymbolIndex = -1
                 };
             }
 
             defineEdit.desc = !string.IsNullOrEmpty(defineEdit.desc)
                 ? defineEdit.desc
-                : isDefined ? "[from player settings]" : "";
+                : desc ?? "";
             
+
 
             definesById[id] = defineEdit;
 

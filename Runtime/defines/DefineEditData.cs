@@ -16,19 +16,23 @@ namespace BeatThat.Defines
     {
         public string id;
         public string[] symbols;
-        public int willDefineSymbol;
+        public int willDefineSymbolIndex;
+        public int definedSymbolIndex;
         public string desc;
-        public bool isDefined;
         public bool willDefine;
         public bool showDetails;
 
 
+        public bool isDefined { 
+            get { return this.definedSymbolIndex >= 0; }
+        }
+
         public string symbol { 
             get {
                 return this.symbols != null
-                           && this.symbols.Length > this.willDefineSymbol
-                           && this.willDefineSymbol >= 0 ?
-                           this.symbols[this.willDefineSymbol] : null;
+                           && this.symbols.Length > this.willDefineSymbolIndex
+                           && this.willDefineSymbolIndex >= 0 ?
+                           this.symbols[this.willDefineSymbolIndex] : null;
             } 
         }
 
@@ -41,7 +45,8 @@ namespace BeatThat.Defines
         public EditType GetEditType()
         {
             if(this.isDefined == this.willDefine) {
-                return EditType.NONE;
+                return (this.willDefine && this.definedSymbolIndex != this.willDefineSymbolIndex) ?
+                    EditType.WILL_CHANGE_SELECTION : EditType.NONE; 
             }
 
             if(!this.willDefine) {
@@ -51,13 +56,17 @@ namespace BeatThat.Defines
             return EditType.WILL_ADD;
         }
 
-        public DefineEditData Select(string symbol)
+        public DefineEditData Select(string symbol, bool isDefined = false)
         {
             var d = this;
 
-            d.willDefineSymbol = this.symbolCount > 1 ?
+            d.willDefineSymbolIndex = this.symbolCount > 1 ?
                 Mathf.Clamp(Array.FindIndex(this.symbols, s => s == symbol), 0, this.symbolCount - 1)
                 : 0;
+
+            if(isDefined) {
+                d.definedSymbolIndex = d.willDefineSymbolIndex;
+            }
             
             return d;
         }
