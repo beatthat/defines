@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BeatThat.Pools;
 using BeatThat.TypeUtil;
 using UnityEditor;
@@ -147,24 +148,30 @@ namespace BeatThat.Defines
 
                     var bkgColorSave = GUI.backgroundColor;
                     var colorSave = GUI.contentColor;
+                    var toolTip = TOOLTIP_DEFAULT;
 
                     switch (curDef.GetEditType())
                     {
                         case EditType.WILL_ADD:
                             GUI.backgroundColor = BKG_WILL_ADD;
                             GUI.contentColor = TEXT_WILL_CHANGE;
+                            toolTip = string.Format(TOOLTIP_WILL_ADD, curDef.symbol);
                             break;
                         case EditType.WILL_REMOVE:
                             GUI.backgroundColor = BKG_WILL_REMOVE;
                             GUI.contentColor = TEXT_WILL_CHANGE;
+                            toolTip = string.Format(TOOLTIP_WILL_REMOVE, curDef.definedSymbol);;
                             break;
                         case EditType.WILL_CHANGE_SELECTION:
                             GUI.backgroundColor = BKG_WILL_CHANGE_SELECTION;
                             GUI.contentColor = TEXT_WILL_CHANGE;
+                            toolTip = string.Format(TOOLTIP_WILL_CHANGE_SELECTION, 
+                                                    curDef.definedSymbol, curDef.symbol);
                             break;
                         default:
                             GUI.backgroundColor = BKG_DEFAULT;
                             GUI.contentColor = TEXT_DEFAULT;
+                            toolTip = TOOLTIP_DEFAULT;
                             break;
                     }
 
@@ -175,12 +182,14 @@ namespace BeatThat.Defines
 
                     if (curDef.symbolCount == 1)
                     {
-                        GUILayout.Label(new GUIContent(curDef.symbol, curDef.desc), GUILayout.Width(200f));
+                        GUILayout.Label(new GUIContent(curDef.symbol, toolTip), GUILayout.Width(200f));
                     }
                     else
                     {
                         curDef.willDefineSymbolIndex =
-                            EditorGUILayout.Popup(curDef.willDefineSymbolIndex, curDef.symbols, GUILayout.Width(200f));
+                            EditorGUILayout.Popup(curDef.willDefineSymbolIndex, 
+                                                  curDef.symbols.Select(s => new GUIContent(s, toolTip)).ToArray(),
+                                                  GUILayout.Width(200f));
                     }
                 
                     defineEdits.Set(curDef.symbol, willEnable);
@@ -216,6 +225,11 @@ namespace BeatThat.Defines
         private static Color BKG_WILL_REMOVE = Color.yellow;
         private static Color BKG_WILL_CHANGE_SELECTION = Color.magenta;
         private static Color BKG_DEFAULT = Color.white;
+
+        private static string TOOLTIP_DEFAULT = "No change";
+        private static string TOOLTIP_WILL_ADD = "Will define {0} on save";
+        private static string TOOLTIP_WILL_REMOVE = "Will remove {0} from defines on save";
+        private static string TOOLTIP_WILL_CHANGE_SELECTION = "Will define {0} and remove {1} from defines on save";
     }
 }
 

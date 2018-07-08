@@ -29,11 +29,21 @@ namespace BeatThat.Defines
 
         public string symbol { 
             get {
-                return this.symbols != null
-                           && this.symbols.Length > this.willDefineSymbolIndex
-                           && this.willDefineSymbolIndex >= 0 ?
-                           this.symbols[this.willDefineSymbolIndex] : null;
+                return SymbolForIndex(this.willDefineSymbolIndex);
             } 
+        }
+
+        public string definedSymbol 
+        {
+            get {
+                return SymbolForIndex(this.definedSymbolIndex);
+            }
+        }
+
+        private string SymbolForIndex(int i)
+        {
+            return (i >= 0 && this.symbols != null && this.symbols.Length > i) ?
+                this.symbols[i] : null;
         }
 
         public int symbolCount {
