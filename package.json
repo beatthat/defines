@@ -1,7 +1,7 @@
 {
   "name": "defines",
   "scope": "beatthat",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Expose the precompiler defines you use around your code in a single window with options to enable/disable.",
   "main": "index.js",
   "scripts": {
@@ -29,13 +29,13 @@
     "url": "git+https://github.com/beatthat/defines.git"
   },
   "keywords": [
-      "unity",
-      "unity3d",
-      "package",
-      "c#",
-      "csharp",
-      "npm",
-      "unpm"
+    "unity",
+    "unity3d",
+    "package",
+    "c#",
+    "csharp",
+    "npm",
+    "unpm"
   ],
   "author": "",
   "license": "ISC",
