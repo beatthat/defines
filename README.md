@@ -14,7 +14,7 @@ Follow these steps to define or undefine symbols already annotated in your proje
 
 ![Launch Window](images/launch-window.gif)
 
-#### Use ```[EditDefine]``` to Make a Define Option Show in Editor
+#### Use ```[EditDefine]``` to Make a Define Option Show in the ```Define Scripting Symbols``` Window
 
 For any define that you want visible in the Define Scripting Symbols window, add ```[EditDefine]``` to at least one class. The attribute must be applied to a class, not a method or other.
 
