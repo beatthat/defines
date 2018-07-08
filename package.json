@@ -1,7 +1,7 @@
 {
   "name": "defines",
   "scope": "beatthat",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Expose the precompiler defines you use around your code in a single window with options to enable/disable.",
   "main": "index.js",
   "scripts": {
@@ -10,15 +10,11 @@
     "clean": "rm -f *.tgz package-lock.json && cd test && npm run clean",
     "version": "git add -A",
     "postversion": "git push && git push --tags && npm run clean",
-
     "template-update": "node scripts/template-update.js",
     "test-install": "npm pack && cp ${npm_package_name}-${npm_package_version}.tgz ${npm_package_name}-latest.tgz && cd test && npm run clean && npm install",
     "test-cp2src": "cd test && node scripts/cp2src.js",
     "test-overwrite2src": "cd test && node scripts/overwrite2src.js",
-
     "test": "echo \"Error: no test specified\" && exit 1",
-
-
     "//": {
       "clean": "deletes all non source files, products of tests etc",
       "template-update": "pulls the latest version of the https://github.com/beatthat/unpm-unity-package-template.git and syncs changes to this package",
