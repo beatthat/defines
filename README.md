@@ -1,41 +1,24 @@
-# TEMPLATE
-
-...
-
-## Usage
-
-See the tests in the `Editor/` folder for each class for usage examples.
-
 ## Install
 
 From your unity project folder:
 
     npm init
-    npm install TEMPLATE --save
-    echo Assets/packages >> .gitignore
-    echo Assets/packages.meta >> .gitignore
-
-The package and all its dependencies will be installed under Assets/Plugins/packages.
+    npm install beatthat/defines --save
 
 ## Development
 
-Setup and run tests:
+You can edit the code and samples in the test environment and then use ```npm run overwrite:test2src``` to sync changes back to the package src.
 
-    npm install
-    npm install ..
+```
+    npm run install:test
     cd test
-    npm install
-    gulp
 
-Remember that changes made to the test folder are not saved to the package
-unless they are copied back into the source folder.
+    # edit code under Assets/Plugins/packages/beatthat/defines
+    # edit samples under Assets/Samples/packages/beatthat/defines
 
-To reinstall the files from the src folder, run `npm install ..` again.
+    # sync changes back to src
+    npm run overwrite:test2src
+```
 
-### Tests
-
-All tests are wrapped in `#if ...` blocks to prevent test spam.
-
-You can enable tests in: Player settings > Other Settings > Scripting Define Symbols
-
-The test key for this package is: TEMPLATE_TESTS
+**REMEMBER:** changes made under the test folder are not saved to the package
+unless they are copied back into the source folder
