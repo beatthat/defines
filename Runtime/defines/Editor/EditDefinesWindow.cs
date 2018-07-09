@@ -186,10 +186,16 @@ namespace BeatThat.Defines
                     }
                     else
                     {
+                        var symbolBefore = curDef.symbol;
+
                         curDef.willDefineSymbolIndex =
                             EditorGUILayout.Popup(curDef.willDefineSymbolIndex, 
                                                   curDef.symbols.Select(s => new GUIContent(s, toolTip)).ToArray(),
                                                   GUILayout.Width(200f));
+
+                        if(curDef.symbol != symbolBefore && curDef.symbol != curDef.definedSymbol) {
+                            willEnable = true;
+                        }
                     }
                 
                     defineEdits.Set(curDef.symbol, willEnable);
