@@ -55,8 +55,8 @@
   ],
   "dependencies": {
     "path": "^0.12.7",
-    "pools": "github:beatthat/pools",
-    "type-utils": "github:beatthat/type-utils",
+    "pools": "github:beatthat/pools#semver:^1.0.0",
+    "type-utils": "github:beatthat/type-utils#semver:^1.0.0",
     "unity-npm-utils": "github:beatthat/unity-npm-utils#semver:^1.0.0"
   },
   "devDependencies": {}
