@@ -22,19 +22,20 @@
       "test-cp2src": "copies changes from 'test' package back to package src but does NOT delete removed files",
       "test-overwrite2src": "copies changes from 'test' package back to src. Deletes src before the copy, so effectively whatever is in test becomes the src",
       "npm version [patch|minor|major]": "after everything commited, use npm version to push a tagged release with bumped version"
-    }
+    },
+    "pretest-install": "rm -f *.tgz"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/beatthat/defines.git"
   },
   "keywords": [
-    "unity",
-    "unity3d",
-    "plugin",
-    "package",
     "csharp",
     "npm",
+    "package",
+    "plugin",
+    "unity",
+    "unity3d",
     "unpm"
   ],
   "author": "",
@@ -48,7 +49,9 @@
     "scripts",
     "src",
     "Runtime",
-    "Samples"
+    "Samples",
+    "README.md",
+    "readmefiles"
   ],
   "dependencies": {
     "path": "^0.12.7",

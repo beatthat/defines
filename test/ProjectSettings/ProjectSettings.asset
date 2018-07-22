@@ -607,7 +607,7 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 0
   scriptingDefineSymbols:
-    1: 
+    1: PowerUI
     4: PowerUI
     7: PowerUI
   platformArchitecture: {}
