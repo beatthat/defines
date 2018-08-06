@@ -41,3 +41,5 @@ node_modules
 package-lock.json
 unpm-local.json
 unpm-packages.json
+
+config.doxygen

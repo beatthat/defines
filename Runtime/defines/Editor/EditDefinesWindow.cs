@@ -136,6 +136,9 @@ namespace BeatThat.Defines
             using(var deflist = ListPool<DefineEditData>.Get()) {
                 defineEdits.Get(deflist);
 
+                var guiStyleSymbol = EditorStyles.largeLabel;
+                guiStyleSymbol.wordWrap = true;
+
                 this.scrollPos = GUILayout.BeginScrollView(this.scrollPos, EditorStyles.helpBox);
                 for (var i = 0; i < deflist.Count; i++)
                 {
@@ -178,11 +181,13 @@ namespace BeatThat.Defines
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
 
-                    var willEnable = GUILayout.Toggle(curDef.willDefine, "", GUILayout.Width(25f));
+                    var willEnable = GUILayout.Toggle(curDef.willDefine, "", 
+                                                      GUILayout.Width(25f));
 
                     if (curDef.symbolCount == 1)
                     {
-                        GUILayout.Label(new GUIContent(curDef.symbol, toolTip), GUILayout.Width(200f));
+                        GUILayout.Label(new GUIContent(curDef.symbol, toolTip), 
+                                        guiStyleSymbol, GUILayout.Width(200f));
                     }
                     else
                     {

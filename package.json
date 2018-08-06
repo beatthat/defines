@@ -23,7 +23,8 @@
       "test-overwrite2src": "copies changes from 'test' package back to src. Deletes src before the copy, so effectively whatever is in test becomes the src",
       "npm version [patch|minor|major]": "after everything commited, use npm version to push a tagged release with bumped version"
     },
-    "pretest-install": "rm -f *.tgz"
+    "pretest-install": "rm -f *.tgz",
+    "docs-generate": "node scripts/docs-generate.js"
   },
   "repository": {
     "type": "git",
