@@ -12,7 +12,7 @@ Follow these steps to define or undefine symbols already annotated in your proje
 2. Check/uncheck symbols in the list
 3. Tap ```Save```
 
-![Launch Window](readmefiles/images/launch-window.gif)
+![Launch Window](READMEfiles/images/launch-window.gif)
 
 #### Use ```[EditDefine]``` to Make a Define Option Show in the ```Define Scripting Symbols``` Window
 
@@ -62,7 +62,7 @@ public class ServerConfig
 }
 ```
 
-![Options](readmefiles/images/options.gif)
+![Options](READMEfiles/images/options.gif)
 
 ## Install
 
